@@ -7,6 +7,11 @@ const path = require('path');
 
 const app = express();
 
+// ✅ Serve STATIC files from /public folder + root fallback
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(__dirname));  // Fallback for index.html
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
 // ===============================
 // REGISTRATION ROUTE - FAST & SAFE
 // ===============================
@@ -123,9 +128,9 @@ See you there 🚀`
       .catch(err => console.log("⚠️ WhatsApp failed:", err.message));
     }
 
-  } catch (error) {
-    console.error("❌ Registration error:", error.message);
-    res.status(500).json({ success: false, message: "Server error" });
-  }
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
 });
 

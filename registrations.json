@@ -1,0 +1,70 @@
+[
+  {
+    "name": "PRAKASH",
+    "email": "kathirprakash43@gmail.com",
+    "phone": "9787361860",
+    "city": "Coimbatore",
+    "experience": "Regular trader / investor",
+    "goal": "Plan long‑term investing",
+    "question": "djshe",
+    "timestamp": "2026-02-11T16:13:51.374Z",
+    "registeredAt": "2026-02-11T16:13:51.425Z"
+  },
+  {
+    "name": "Ragavi ",
+    "email": "ragaviravi112@gmail.com",
+    "phone": "9585199081",
+    "city": "Coimbatore",
+    "experience": "UG",
+    "goal": "Understand basics safely",
+    "question": "Welcome",
+    "timestamp": "2026-02-12T12:27:04.765Z",
+    "registeredAt": "2026-02-12T12:27:04.937Z"
+  },
+  {
+    "name": "Ragavi ",
+    "email": "ragaviravi112@gmail.com",
+    "phone": "9585199081",
+    "city": "Coimbatore",
+    "experience": "UG",
+    "goal": "Understand basics safely",
+    "question": "Welcome",
+    "timestamp": "2026-02-12T12:27:04.765Z",
+    "error": "nodemailer.createTransporter is not a function",
+    "registeredAt": "2026-02-12T12:27:04.967Z"
+  },
+  {
+    "name": "Ragavi ",
+    "email": "annadurai400@gmail.com",
+    "phone": "8870626226",
+    "city": "Coimbatore",
+    "experience": "UG",
+    "goal": "Understand basics safely",
+    "question": "Welcome",
+    "timestamp": "2026-02-12T12:33:08.639Z",
+    "registeredAt": "2026-02-12T12:33:08.848Z"
+  },
+  {
+    "name": "Ragavi ",
+    "email": "annadurai400@gmail.com",
+    "phone": "8870626226",
+    "city": "Coimbatore",
+    "experience": "UG",
+    "goal": "Understand basics safely",
+    "question": "Welcome",
+    "timestamp": "2026-02-12T12:33:08.639Z",
+    "error": "nodemailer.createTransporter is not a function",
+    "registeredAt": "2026-02-12T12:33:08.908Z"
+  },
+  {
+    "name": "Ragavi ",
+    "email": "annadurai400@gmail.com",
+    "phone": "8870626226",
+    "city": "Coimbatore",
+    "experience": "UG",
+    "goal": "Understand basics safely",
+    "question": "Welcome",
+    "timestamp": "2026-02-12T12:36:41.348Z",
+    "registeredAt": "2026-02-12T12:36:41.608Z"
+  }
+]

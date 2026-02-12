@@ -45,7 +45,11 @@ app.post('/register', async (req, res) => {
     };
 
     registrations.push(registration);
-    fs.writeFileSync(registrationsFile, JSON.stringify(registrations, null, 2));
+await fs.promises.writeFile(
+  registrationsFile,
+  JSON.stringify(registrations, null, 2)
+);
+
 
     console.log('✅ Registration saved instantly:', name);
 
@@ -129,7 +133,7 @@ See you there 🚀`
     }
 
     } catch (error) {
-    console.error("❌ Registration error:", error.message);
+    console.error("❌ Registration error FULL:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 });

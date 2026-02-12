@@ -7,11 +7,34 @@ const path = require('path');
 
 const app = express();
 
-// ✅ Serve STATIC files from /public folder + root fallback
+// ===============================
+// STATIC + BODY PARSER
+// ===============================
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.static(__dirname));  // Fallback for index.html
+app.use(express.static(__dirname));
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
+
+// ===============================
+// REGISTRATION FILE SETUP
+// ===============================
+const registrationsFile = path.join(__dirname, 'registrations.json');
+
+// Ensure file exists (important for Render)
+if (!fs.existsSync(registrationsFile)) {
+  fs.writeFileSync(registrationsFile, '[]');
+}
+
+// Load existing registrations
+let registrations = [];
+try {
+  const data = fs.readFileSync(registrationsFile, 'utf8');
+  registrations = JSON.parse(data);
+} catch (err) {
+  console.log("⚠️ Could not load registrations file:", err.message);
+  registrations = [];
+}
+
 // ===============================
 // REGISTRATION ROUTE - FAST & SAFE
 // ===============================
@@ -21,7 +44,6 @@ app.post('/register', async (req, res) => {
   let { name, email, phone, city, experience, goal, question, timestamp } = req.body;
 
   try {
-    // Basic cleanup
     name = (name || 'Anonymous').toString().substring(0, 100);
     email = email || '';
     phone = phone || '';
@@ -31,7 +53,6 @@ app.post('/register', async (req, res) => {
     question = question || '';
     timestamp = timestamp || new Date().toISOString();
 
-    // Save registration FIRST
     const registration = {
       name,
       email,
@@ -45,20 +66,20 @@ app.post('/register', async (req, res) => {
     };
 
     registrations.push(registration);
-await fs.promises.writeFile(
-  registrationsFile,
-  JSON.stringify(registrations, null, 2)
-);
 
+    await fs.promises.writeFile(
+      registrationsFile,
+      JSON.stringify(registrations, null, 2)
+    );
 
     console.log('✅ Registration saved instantly:', name);
 
-    // 🚀 Respond immediately
+    // Send response immediately (fast UX)
     res.json({ success: true, message: 'Registration successful!' });
 
-    // ===================================================
+    // ===============================
     // EMAIL (Background)
-    // ===================================================
+    // ===============================
     if (email && process.env.EMAIL_USER && process.env.EMAIL_PASS) {
 
       const transporter = nodemailer.createTransport({
@@ -95,9 +116,9 @@ await fs.promises.writeFile(
       .catch(err => console.log("⚠️ Email failed:", err.message));
     }
 
-    // ===================================================
+    // ===============================
     // WHATSAPP (Background)
-    // ===================================================
+    // ===============================
     if (phone && process.env.TWILIO_SID && process.env.TWILIO_AUTH_TOKEN) {
 
       const client = twilio(
@@ -132,10 +153,20 @@ See you there 🚀`
       .catch(err => console.log("⚠️ WhatsApp failed:", err.message));
     }
 
-    } catch (error) {
+  } catch (error) {
     console.error("❌ Registration error FULL:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
+});
+
+// ===============================
+// ADMIN ROUTE
+// ===============================
+app.get('/api/registrations', (req, res) => {
+  res.json({
+    total: registrations.length,
+    registrations
+  });
 });
 
 // ===============================

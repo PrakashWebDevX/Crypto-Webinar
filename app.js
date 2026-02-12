@@ -32,20 +32,25 @@ try {
 }
 
 // ===============================
-// REGISTER ROUTE
+// REGISTRATION ROUTE - FAST & SAFE
 // ===============================
-app.post("/register", async (req, res) => {
-  try {
-    const {
-      name = "Anonymous",
-      email = "",
-      phone = "",
-      city = "",
-      experience = "",
-      goal = "",
-      question = "",
-    } = req.body;
+app.post('/register', async (req, res) => {
+  console.log('📝 New registration attempt:', req.body);
 
+  let { name, email, phone, city, experience, goal, question, timestamp } = req.body;
+
+  try {
+    // Basic cleanup
+    name = (name || 'Anonymous').toString().substring(0, 100);
+    email = email || '';
+    phone = phone || '';
+    city = city || '';
+    experience = experience || '';
+    goal = goal || '';
+    question = question || '';
+    timestamp = timestamp || new Date().toISOString();
+
+    // Save registration FIRST
     const registration = {
       name,
       email,
@@ -54,97 +59,96 @@ app.post("/register", async (req, res) => {
       experience,
       goal,
       question,
-      registeredAt: new Date().toISOString(),
+      timestamp,
+      registeredAt: new Date().toISOString()
     };
 
     registrations.push(registration);
+    fs.writeFileSync(registrationsFile, JSON.stringify(registrations, null, 2));
 
-    await fs.promises.writeFile(
-      registrationsFile,
-      JSON.stringify(registrations, null, 2)
-    );
+    console.log('✅ Registration saved instantly:', name);
 
-    res.json({ success: true, message: "Registration successful" });
+    // 🚀 Respond immediately
+    res.json({ success: true, message: 'Registration successful!' });
 
-    // ================= EMAIL =================
+    // ===================================================
+    // EMAIL (Background)
+    // ===================================================
     if (email && process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+
       const transporter = nodemailer.createTransport({
-        service: "gmail",
+        host: "smtp.gmail.com",
+        port: 587,
+        secure: false,
         auth: {
           user: process.env.EMAIL_USER,
           pass: process.env.EMAIL_PASS,
         },
       });
 
-      await transporter.sendMail({
-        from: `"Crypto Awareness Team" <${process.env.EMAIL_USER}>`,
+      transporter.sendMail({
+        from: process.env.EMAIL_USER,
         to: email,
-        subject: "Webinar Registration Confirmed",
+        subject: '✅ Crypto Webinar Registration Confirmed',
         html: `
           <h2>Hello ${name},</h2>
-          <p>Your registration for the Crypto Awareness Webinar is confirmed.</p>
-          <p><strong>Date:</strong> 23 February 2026</p>
-          <p><strong>Time:</strong> 7:00 PM IST</p>
-          <p><strong>Zoom Link:</strong></p>
-          <a href="https://us05web.zoom.us/j/83989603104?pwd=JMPuVsHx4ZigHBeaLNaxqKYuyXV8MN.1">
-            Join Webinar
-          </a>
-          <p>Thank you.</p>
-        `,
-      });
+          <p>🎉 Thank you for registering for the <strong>Crypto Awareness Program</strong>.</p>
 
-      console.log("Email sent successfully");
+          <p><strong>📅 Date:</strong> 23 February 2026</p>
+          <p><strong>⏰ Time:</strong> 7:00 PM IST</p>
+          <p><strong>💻 Mode:</strong> Live Zoom Webinar</p>
+
+          <p><strong>🔗 Zoom Link:</strong></p>
+          <a href="https://us05web.zoom.us/j/83989603104?pwd=JMPuVsHx4ZigHBeaLNaxqKYuyXV8MN.1">
+          Join Webinar
+          </a>
+
+          <p>See you there 🚀</p>
+        `
+      })
+      .then(() => console.log("📧 Email sent:", email))
+      .catch(err => console.log("⚠️ Email failed:", err.message));
     }
 
-    // ================= WHATSAPP =================
+    // ===================================================
+    // WHATSAPP (Background)
+    // ===================================================
     if (phone && process.env.TWILIO_SID && process.env.TWILIO_AUTH_TOKEN) {
+
       const client = twilio(
         process.env.TWILIO_SID,
         process.env.TWILIO_AUTH_TOKEN
       );
 
-      let cleanPhone = phone.replace(/\D/g, "");
+      let cleanPhone = phone.replace(/\D/g, '');
 
-      if (cleanPhone.length === 10) {
-        cleanPhone = "91" + cleanPhone;
+      if (cleanPhone.startsWith('91')) {
+        cleanPhone = cleanPhone.substring(2);
       }
 
-      await client.messages.create({
-        from: "whatsapp:+14155238886",
+      if (cleanPhone.length === 10) {
+        cleanPhone = '91' + cleanPhone;
+      }
+
+      client.messages.create({
+        from: 'whatsapp:+14155238886',
         to: `whatsapp:+${cleanPhone}`,
-        body: `Hello ${name},
+        body: `✅ Hi ${name}! Your Crypto Webinar registration is confirmed!
 
-Your registration is confirmed.
+📅 23 Feb 2026
+⏰ 7:00 PM IST
 
-Date: 23 February 2026
-Time: 7:00 PM IST
-
-Join Zoom:
+🔗 Join here:
 https://us05web.zoom.us/j/83989603104?pwd=JMPuVsHx4ZigHBeaLNaxqKYuyXV8MN.1
 
-Thank you.`,
-      });
-
-      console.log("WhatsApp sent successfully");
+See you there 🚀`
+      })
+      .then(() => console.log("📱 WhatsApp sent:", cleanPhone))
+      .catch(err => console.log("⚠️ WhatsApp failed:", err.message));
     }
+
   } catch (error) {
-    console.error("Registration error:", error);
+    console.error("❌ Registration error:", error.message);
     res.status(500).json({ success: false, message: "Server error" });
   }
-});
-
-// ===============================
-// ADMIN VIEW
-// ===============================
-app.get("/api/registrations", (req, res) => {
-  res.json(registrations);
-});
-
-// ===============================
-// START SERVER
-// ===============================
-const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, () => {
-  console.log("Server running on port " + PORT);
 });

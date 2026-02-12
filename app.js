@@ -128,9 +128,17 @@ See you there 🚀`
       .catch(err => console.log("⚠️ WhatsApp failed:", err.message));
     }
 
+    } catch (error) {
+    console.error("❌ Registration error:", error.message);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+// ===============================
+// START SERVER
+// ===============================
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
-

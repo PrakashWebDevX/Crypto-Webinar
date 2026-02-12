@@ -152,3 +152,29 @@ See you there 🚀`
     res.status(500).json({ success: false, message: "Server error" });
   }
 });
+
+// ===============================
+// ADMIN VIEW ROUTE (Optional)
+// ===============================
+app.get('/api/registrations', (req, res) => {
+  try {
+    const data = fs.readFileSync(registrationsFile, "utf8");
+    const allRegistrations = JSON.parse(data);
+    res.json({
+      total: allRegistrations.length,
+      registrations: allRegistrations
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Unable to fetch registrations" });
+  }
+});
+
+// ===============================
+// START SERVER (VERY IMPORTANT)
+// ===============================
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});
+

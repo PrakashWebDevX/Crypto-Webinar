@@ -36,7 +36,7 @@ app.get('/', (req, res) => {
   // Try public/index.html first, then root index.html
   const publicPath = path.join(__dirname, 'public', 'index.html');
   const rootPath = path.join(__dirname, 'index.html');
-  
+
   if (fs.existsSync(publicPath)) {
     res.sendFile(publicPath);
   } else if (fs.existsSync(rootPath)) {
@@ -51,14 +51,14 @@ app.get('/', (req, res) => {
 // ===============================
 app.post('/register', async (req, res) => {
   console.log('📝 New registration attempt:', req.body);
-  
+
   let { name, email, phone, city, experience, goal, question, timestamp } = req.body;
 
   try {
     // 🔥 FIXED: Accept ANY name (Chinese, Arabic, Emoji, special chars)
     name = name || 'Anonymous';
     name = name.toString().substring(0, 100);  // Max 100 chars
-    
+
     email = email || '';
     phone = phone || '';
     city = city || '';
@@ -87,14 +87,18 @@ app.post('/register', async (req, res) => {
     // ===============================
     // EMAIL SETUP
     // ===============================
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-          user: process.env.EMAIL_USER,
-          pass: process.env.EMAIL_PASS
+    const nodemailer = require("nodemailer");
 
-      }
+    const transporter = nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: false, // IMPORTANT
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
     });
+
 
     await transporter.sendMail({
       from: 'web3withpassiveincome@gmail.com',
@@ -128,7 +132,7 @@ app.post('/register', async (req, res) => {
     const client = twilio(
       process.env.TWILIO_SID,
       process.env.TWILIO_AUTH_TOKEN
-);
+    );
 
 
     // 🔥 FIXED: Clean Indian phone numbers (+91 or 10 digits)
@@ -149,10 +153,10 @@ app.post('/register', async (req, res) => {
     console.log('📱 WhatsApp sent to:', cleanPhone);
 
     res.json({ success: true, message: 'Registration successful!' });
-    
+
   } catch (error) {
     console.error('❌ Registration error:', error.message);
-    
+
     // Still save failed attempts for debugging
     const failedReg = {
       ...req.body,
@@ -161,7 +165,7 @@ app.post('/register', async (req, res) => {
     };
     registrations.push(failedReg);
     fs.writeFileSync(registrationsFile, JSON.stringify(registrations, null, 2));
-    
+
     res.status(500).json({ success: false, message: 'Server error, but data saved for admin review.' });
   }
 });
@@ -170,8 +174,8 @@ app.post('/register', async (req, res) => {
 // ADMIN: VIEW USERS + EXCEL DOWNLOAD
 // ===============================
 app.get('/api/registrations', (req, res) => {
-  res.json({ 
-    registrations, 
+  res.json({
+    registrations,
     total: registrations.length,
     recent: registrations.slice(-5)
   });

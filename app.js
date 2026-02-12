@@ -76,68 +76,68 @@ app.post('/register', async (req, res) => {
 
     // Send response immediately (fast UX)
     res.json({ success: true, message: 'Registration successful!' });
+// ===============================
+// EMAIL (Background)
+// ===============================
+if (email && process.env.EMAIL_USER && process.env.EMAIL_PASS) {
 
-    // ===============================
-    // EMAIL (Background)
-    // ===============================
-    if (email && process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+  const transporter = nodemailer.createTransport({
+    service: "gmail", // ✅ correct spelling
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+  });
 
-      const transport = nodemailer.createTransport({
-        service:"gmsil",
-        auth: {
-          user: process.env.EMAIL_USER,
-          pass: process.env.EMAIL_PASS,
-        },
-      });
+  transporter.sendMail({
+    from: `"Crypto Webinar" <${process.env.EMAIL_USER}>`,
+    to: email,
+    subject: '✅ Crypto Webinar Registration Confirmed',
+    html: `
+      <h2>Hello ${name},</h2>
+      <p>🎉 Thank you for registering for the <strong>Crypto Awareness Program</strong>.</p>
 
-      transporter.sendMail({
-        from: process.env.EMAIL_USER,
-        to: email,
-        subject: '✅ Crypto Webinar Registration Confirmed',
-        html: `
-          <h2>Hello ${name},</h2>
-          <p>🎉 Thank you for registering for the <strong>Crypto Awareness Program</strong>.</p>
+      <p><strong>📅 Date:</strong> 23 February 2026</p>
+      <p><strong>⏰ Time:</strong> 7:00 PM IST</p>
+      <p><strong>💻 Mode:</strong> Live Zoom Webinar</p>
 
-          <p><strong>📅 Date:</strong> 23 February 2026</p>
-          <p><strong>⏰ Time:</strong> 7:00 PM IST</p>
-          <p><strong>💻 Mode:</strong> Live Zoom Webinar</p>
+      <p><strong>🔗 Zoom Link:</strong></p>
+      <a href="https://us05web.zoom.us/j/83989603104?pwd=JMPuVsHx4ZigHBeaLNaxqKYuyXV8MN.1">
+        Join Webinar
+      </a>
 
-          <p><strong>🔗 Zoom Link:</strong></p>
-          <a href="https://us05web.zoom.us/j/83989603104?pwd=JMPuVsHx4ZigHBeaLNaxqKYuyXV8MN.1">
-          Join Webinar
-          </a>
+      <p>See you there 🚀</p>
+    `
+  })
+  .then(() => console.log("📧 Email sent:", email))
+  .catch(err => console.log("⚠️ Email failed:", err.message));
+}
 
-          <p>See you there 🚀</p>
-        `
-      })
-      .then(() => console.log("📧 Email sent:", email))
-      .catch(err => console.log("⚠️ Email failed:", err.message));
-    }
 
-    // ===============================
-    // WHATSAPP (Background)
-    // ===============================
-    if (phone && process.env.TWILIO_SID && process.env.TWILIO_AUTH_TOKEN) {
+// ===============================
+// WHATSAPP (Background)
+// ===============================
+if (phone && process.env.TWILIO_SID && process.env.TWILIO_AUTH_TOKEN) {
 
-      const client = twilio(
-        process.env.TWILIO_SID,
-        process.env.TWILIO_AUTH_TOKEN
-      );
+  const client = twilio(
+    process.env.TWILIO_SID,
+    process.env.TWILIO_AUTH_TOKEN
+  );
 
-      let cleanPhone = phone.replace(/\D/g, '');
+  let cleanPhone = phone.replace(/\D/g, '');
 
-      if (cleanPhone.startsWith('91')) {
-        cleanPhone = cleanPhone.substring(2);
-      }
+  if (cleanPhone.startsWith('91')) {
+    cleanPhone = cleanPhone.substring(2);
+  }
 
-      if (cleanPhone.length === 10) {
-        cleanPhone = '91' + cleanPhone;
-      }
+  if (cleanPhone.length === 10) {
+    cleanPhone = '91' + cleanPhone;
+  }
 
-      client.messages.create({
-        from: 'whatsapp:+14155238886',
-        to: `whatsapp:+${cleanPhone}`,
-        body: `✅ Hi ${name}! Your Crypto Webinar registration is confirmed!
+  client.messages.create({
+    from: 'whatsapp:+14155238886', // Twilio sandbox number
+    to: `whatsapp:+${cleanPhone}`,
+    body: `✅ Hi ${name}! Your Crypto Webinar registration is confirmed!
 
 📅 23 Feb 2026
 ⏰ 7:00 PM IST
@@ -146,16 +146,10 @@ app.post('/register', async (req, res) => {
 https://us05web.zoom.us/j/83989603104?pwd=JMPuVsHx4ZigHBeaLNaxqKYuyXV8MN.1
 
 See you there 🚀`
-      })
-      .then(() => console.log("📱 WhatsApp sent:", cleanPhone))
-      .catch(err => console.log("⚠️ WhatsApp failed:", err.message));
-    }
-
-  } catch (error) {
-    console.error("❌ Registration error FULL:", error);
-    res.status(500).json({ success: false, message: "Server error" });
-  }
-});
+  })
+  .then(() => console.log("📱 WhatsApp sent:", cleanPhone))
+  .catch(err => console.log("⚠️ WhatsApp failed:", err.message));
+}
 
 // ===============================
 // ADMIN ROUTE

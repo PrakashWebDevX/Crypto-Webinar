@@ -1,3 +1,12 @@
+const express = require('express');
+const bodyParser = require('body-parser');
+const nodemailer = require('nodemailer');
+const twilio = require('twilio');
+const fs = require('fs');
+const path = require('path');
+
+const app = express();
+
 // ===============================
 // REGISTRATION ROUTE - FAST & SAFE
 // ===============================
@@ -119,3 +128,4 @@ See you there 🚀`
     res.status(500).json({ success: false, message: "Server error" });
   }
 });
+

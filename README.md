@@ -9,7 +9,9 @@ Users can register for a live crypto awareness webinar and instantly receive:
 ✅ Secure registration storage  
 
 🌐 **Live Website:**  
-https://crypto-webinars.onrender.com/
+https://crypto-webinars.onrender.com
+
+<img width="1920" height="1025" alt="image" src="https://github.com/user-attachments/assets/ebf0deee-a433-47cd-9e8b-633af00eb731" />
 
 ---
 

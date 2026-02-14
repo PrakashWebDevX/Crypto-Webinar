@@ -74,8 +74,8 @@ crypto-webinar/
 ### 1️⃣ Clone Repository
 
 ```
-git clone https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
-cd YOUR_REPO_NAME
+git clone https://github.com/PrakashWebDevX/Crypto-Webinar.git
+cd PrakashWebDevX
 ```
 
 ### 2️⃣ Install Dependencies
@@ -166,7 +166,7 @@ Zoom link is sent via Email & WhatsApp after successful registration.
 
 ## 👨‍💻 Author
 
-Prakash A  
+Prakash   
 Crypto Webinar Organizer  
 Coimbatore, Tamil Nadu  
 
